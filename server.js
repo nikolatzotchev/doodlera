@@ -10,7 +10,7 @@ process.setMaxListeners(0);
 
 app.use("/", express.static(__dirname));
 
-const connectionString = process.env.DATABASE_URL;
+const connectionString = process.env.DATABASE_URL || "postgres://postgres:root@localhost:5432/doodlera";
 
 var time = 60;
 
@@ -39,58 +39,42 @@ io.sockets.on('connection', function(socket){
 	
 	socket.on('chosenname', function(name){
 		pg.connect(connectionString, (err, client, done) => {
-		// Handle connection errors
-		if(err) {
-		  done();
-		  console.log(err);
-		}
-		
-		const query = client.query('SELECT * FROM doodlera_schema.doodlera_table WHERE name = $1', [name]);
-		// Stream results back one row at a time
-		query.once('row', (row) => {
-			exists = true;
-			socketid = row.id;
-			playercount = playercount + 1;
-		});
-		
-		// SQL Query > Insert Data
-		
-		// After all data is returned, close connection and return results
-		query.once('end', () => {
-		  done();
-		});
-		});
-		
-		pg.connect(connectionString, (err, client, done) => {
-		// Handle connection errors
-		if(err) {
-		  done();
-		  console.log(err);
-		}
-		
-		if (!exists) {
-			client.query('INSERT INTO doodlera_schema.doodlera_table (name) values($1) RETURNING id', [name], function(err, result) {
-				if(err) {
-					done()
-					console.log(err);//handle error
-				}
-				else {
+			// Handle connection errors
+			if(err) {
+			  done();
+			  console.log(err);
+			}
+			
+			const query = client.query('SELECT * FROM doodlera_schema.doodlera_table WHERE name = $1', [name], function(err, result) 
+			{
+				if (!(typeof result !== 'undefined' && result))
+				{
 					socketid = result.rows[0].id;
 					playercount = playercount + 1;
 				}
+				else
+				{
+					setTimeout(function() {}, 10);
+					
+					client.query('INSERT INTO doodlera_schema.doodlera_table (name) values($1) ON CONFLICT DO NOTHING RETURNING id', [name], function(err, results) {
+						if(err) 
+						{
+							done()
+							console.log(err);//handle error
+						}
+						else 
+						{
+							socketid = results.rows[0].id;
+							playercount = playercount + 1;
+						}
+					});
+				}
 			});
-		}
-		else
-			exists = false;
-		
-		// SQL Query > Insert Data
-		
-		// After all data is returned, close connection and return results
-		query.once('end', () => {
-		  done();
-		});
-		});
 
+			query.once('end', () => {
+			  done();
+			});
+		});
   });
 	
 	socket.on('chat message', function(name, msg){
@@ -103,9 +87,9 @@ io.sockets.on('connection', function(socket){
 			  console.log(err);
 			}
 			
-			const query = client.query('SELECT * FROM doodlera_schema.doodlera_table WHERE name = $1', [name]);
+			const query = client.query('SELECT * FROM doodlera_schema.doodlera_table WHERE name = $1 LIMIT 1', [name]);
 			// Stream results back one row at a time
-			query.once('row', (row) => {
+			query.on('row', (row) => {
 				io.emit('chat message',null,'' + name + ' has ' + row.points + ' points.');
 			});
 			
@@ -150,7 +134,7 @@ io.sockets.on('connection', function(socket){
 			// SQL Query > Select Data
 			const query = client.query('SELECT * FROM doodlera_schema.doodlera_table WHERE id = $1', [socketid]);
 			// Stream results back one row at a time
-			query.once('row', (row) => {
+			query.on('row', (row) => {
 			  	io.emit('chat message',null,'' + row.name.replace(/`/g , "") + ' disconnected.');
 				playercount = playercount - 1;
 			});
