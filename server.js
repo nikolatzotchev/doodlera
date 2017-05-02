@@ -1,10 +1,12 @@
 var express = require('express');
+var fs		= require('fs');
 var path 	= require('path');
 var app 	= express();
 var pg = require('pg');
 var http	= require('http').Server(app);
 var io		= require('socket.io')(http);
 var port	= process.env.PORT || 3000;
+var words	= [];
 
 process.setMaxListeners(0);
 
@@ -14,17 +16,30 @@ const connectionString = process.env.DATABASE_URL || "postgres://postgres:root@l
 
 var time = 60;
 
+fs.readFile('./words.txt', "utf-8", function (err, data) {
+  if (err) throw err;
+	words = data.split('\n');
+});
+
 const client = new pg.Client(connectionString);
 client.connect();
+
 const query = client.query(
   'CREATE TABLE IF NOT EXISTS doodlera_schema.doodlera_table (id SERIAL PRIMARY KEY, name VARCHAR(40) not null, points integer DEFAULT 0)');
 query.on('end', () => { client.end(); });
 
 setInterval( function() {
-	io.emit('updateTimer', time);
-	time = time - 1;
-	if (time == 0)
-		time = 75;
+	if (playercount != 0) {
+				
+		if (time == 60)
+			currentword = words[Math.floor(Math.random() * 499)];
+		
+		io.emit('updateTimer', time, currentword);
+		
+		time = time - 1;
+		if (time == 0)
+			time = 75;
+	}
 }, 1000);
 
 var playercount = 0;
@@ -54,8 +69,6 @@ io.sockets.on('connection', function(socket){
 				}
 				else
 				{
-					setTimeout(function() {}, 10);
-					
 					client.query('INSERT INTO doodlera_schema.doodlera_table (name) values($1) ON CONFLICT DO NOTHING RETURNING id', [name], function(err, results) {
 						if(err) 
 						{
@@ -106,13 +119,15 @@ io.sockets.on('connection', function(socket){
 		io.emit('queuedrawing', image, name);
 	});
 	
-	socket.on('winner', function(name){
+	socket.on('winner', function(voter,winner){
 		pg.connect(connectionString, (err, client, done) => {
 		// Handle connection errors
 		if(err) {
 		  done();
 		  console.log(err);
 		}
+		
+		io.emit('chat message', null, '' + voter + " voted for " + winner + "!");
 		// SQL Query > Insert Data
 		client.query('UPDATE doodlera_schema.doodlera_table SET points = points + 1 WHERE name = $1', [name]);
 		
