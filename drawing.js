@@ -30,7 +30,6 @@ var crayonTextureImage = new Image();
 var clickX = new Array();
 var clickY = new Array();
 var clickColor = new Array();
-var clickTool = new Array();
 var clickSize = new Array();
 var clickDrag = new Array();
 var paint = false;
@@ -56,6 +55,8 @@ sizeHotspotWidthObject.normal = 18;
 sizeHotspotWidthObject.small = 16;
 var totalLoadResources = 1;
 var curLoadResNum = 0;
+var redraw_count = 0;
+
 /**
 * Calls the redraw function after all neccessary resources are loaded.
 */
@@ -134,7 +135,6 @@ function addClick(x, y, dragging)
 {
 	clickX.push(x);
 	clickY.push(y);
-	clickTool.push(curTool);
 	clickColor.push(curColor);
 	clickSize.push(curSize);
 	clickDrag.push(dragging);
@@ -147,7 +147,7 @@ function newCanvas()
 	clickColor = [];
 	clickSize = [];
 	clickDrag = [];
-	clickType = [];
+	clearCanvas();
 	redraw();
 }
 
@@ -162,21 +162,32 @@ function clearCanvas()
 /**
 * Redraws the canvas.
 */
+
+var image = new Image(500, 1000);
+
 function redraw()
 {
+
 	// Make sure required resources are loaded before redrawing
 	if(curLoadResNum < totalLoadResources){ return; }
 	
-	clearCanvas();
+	redraw_count++;
+	console.log(redraw_count);
 	
 	var locX;
 	var locY;
 	
-	if(curTool == "marker")
+	if (redraw_count > 200)
 	{
-		// Draw the marker tool background
-		context.drawImage(markerBackgroundImage, 0, 0, canvasWidth, canvasHeight);
-	}
+		image.scr = canvas.toDataURL();
+		context.drawImage(image, drawingAreaHeight, drawingAreaWidth);
+		clickX = clickX.slice(-100);
+		clickY = clickY.slice(-100);
+		clickColor = clickColor.slice(-100);
+		clickSize = clickSize.slice(-100);
+		clickDrag = clickDrag.slice(-100);
+		redraw_count = 0;
+	}		
 	
 	// Keep the drawing in the drawing area
 	context.save();
@@ -198,14 +209,9 @@ function redraw()
 		}
 		context.lineTo(clickX[i], clickY[i]);
 		context.closePath();
-		
-		if(clickTool[i] == "eraser"){
-			//context.globalCompositeOperation = "destination-out"; // To erase instead of draw over with white
-			context.strokeStyle = 'white';
-		}else{
-			//context.globalCompositeOperation = "source-over";	// To erase instead of draw over with white
-			context.strokeStyle = clickColor[i];
-		}
+
+		context.strokeStyle = clickColor[i];
+
 		context.lineJoin = "round";
 		context.lineWidth = radius;
 		context.stroke();
