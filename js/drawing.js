@@ -27,11 +27,12 @@ var crayonBackgroundImage = new Image();
 var markerBackgroundImage = new Image();
 var eraserBackgroundImage = new Image();
 var crayonTextureImage = new Image();
-var clickX = new Array();
-var clickY = new Array();
-var clickColor = new Array();
-var clickSize = new Array();
-var clickDrag = new Array();
+var undoHistory = [];
+var clickX = [];
+var clickY = [];
+var clickColor = [];
+var clickSize = [];
+var clickDrag = [];
 var paint = false;
 var curColor = "#000000";
 var curTool = "marker";
@@ -107,7 +108,7 @@ function prepareCanvas()
 		redraw();
 	});
 	
-	$('#canvas').mousemove(function(e){
+	$('#canvas').mousemove(function(e) {
 		if(paint==true){
 			curSize = document.getElementById("brushSize").value
 			addClick(e.pageX - this.offsetLeft, e.pageY - this.offsetTop, true);
@@ -115,12 +116,31 @@ function prepareCanvas()
 		}
 	});
 	
-	$('#canvas').mouseup(function(e){
+	$('#canvas').mouseup(function(e) {
 		paint = false;
+		undoHistory.push(canvas.toDataURL());
 	  	redraw();
 	});
 	
+	var screen;
+	
+	function KeyPress(e) {
+	  screen = new Image(500, 1000);
+      var evtobj = window.event? event : e
+      if (evtobj.keyCode == 90 && evtobj.ctrlKey) {
+		newCanvas();
+		undoHistory.pop();
+		screen.scr = undoHistory[undoHistory.length - 1];
+		context.drawImage(screen, drawingAreaHeight, drawingAreaWidth);
+		context.save();
+		context.restore();
+	  }
+	}
+
+	document.onkeydown = KeyPress;
+	
 	$('#canvas').mouseleave(function(e){
+		undoHistory.push(canvas.toDataURL());
 		paint = false;
 	});
 }
@@ -163,8 +183,6 @@ function clearCanvas()
 * Redraws the canvas.
 */
 
-var image = new Image(500, 1000);
-
 function redraw()
 {
 
@@ -178,6 +196,7 @@ function redraw()
 	
 	if (redraw_count > 200)
 	{
+		var image = new Image(500, 1000);
 		image.scr = canvas.toDataURL();
 		context.drawImage(image, drawingAreaHeight, drawingAreaWidth);
 		clickX = clickX.slice(-100);
