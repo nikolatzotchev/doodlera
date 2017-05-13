@@ -4,52 +4,10 @@
     <title>Палитра</title>
 	<script type="text/javascript" src="https://cdn.socket.io/socket.io-1.2.0.js"></script>
     <script type="text/javascript" src="https://code.jquery.com/jquery-1.11.1.js"></script>
-	<script type="text/javascript" src="slider.js"></script> <!--slider-->
-    <script type="text/javascript" src="drawing.js"></script> <!--drawing-->
-	<script type="text/javascript" src="palette.js"></script> <!--palette-->
-    <style>
-      * { margin: 0; padding: 0; box-sizing: border-box; }
-      body { font: 13px Helvetica, Arial; }
-      .form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
-      .form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
-      .form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
-      #messages {width: 100%; height: 29em; margin: 0; padding: 0; padding-bottom: 20px}
-      #messages li { padding: 5px 10px; }
-      #messages li:nth-child(odd) { background: #eee; }
-      #messages {overflow: scroll; overflow-x: hidden;}
-	
-	  .modal {
-		display: inline-block; 
-		position: fixed;
-		z-index: 1;
-		left: 0;
-		top: 0;
-		width: 100%;
-		height: 100%;
-		overflow: auto;
-		background-color: rgb(0,0,0);
-		background-color: rgba(0,0,0,0.4);
-	  }
-
-	  .modal-content {
-		background-color: #fefefe;
-		margin: 15% auto; /* 15% from the top and centered */
-		padding: 20px;
-		border: 1px solid #888;
-		width: 40%;
-		height: 10%;
-	  }
-	  .timer {
-		float: right;
-		padding: 10px;
-	  }
-	  .theme {
-		float: right;
-		padding: 10px;
-		padding-left: 50px;
-	  }
-
-    </style>
+	<script type="text/javascript" src="js/slider.js"></script> <!--slider-->
+    <script type="text/javascript" src="js/drawing.js"></script> <!--drawing-->
+	<script type="text/javascript" src="js/palette.js"></script> <!--palette-->
+    <link rel="stylesheet" type="text/css" href="css/doodlerstyle.css">
   </head>
   <body>
 	<img src="images/RnZGJo5.png" style="padding: 10px; float: left">
@@ -86,93 +44,6 @@
     <form class="form" action="">
       <input id="m" autocomplete="off" /><button>Send</button>
     </form>
-	<script> 
-	  var modal = document.getElementById('myModal');
-	  var theend = document.getElementById('roundEnd');
-	  var paintings = document.getElementById('paintings');
-	  var btn = document.getElementById("myBtn");
-	  var players = 0;
-	  var sock = io();
-	  var yourname;
-	  
-	  btn.onclick = function() {
-		if ($('#username').val() != '')
-		{
-		  modal.style.display = "none"
-		  sock.emit('chosenname', $('#username').val())
-		  yourname = $('#username').val();
-		}
-	  }
-	  
-        var socket = io();
-        
-		$('form').submit(function(){
-		  if ($('#username').val() != '')
-		  {
-		    socket.emit('chat message',null, '' + $('#username').val() + ' joined.');
-			$('#username').val('');
-		  }
-		  else 
-		  {
-			if ($('#m').val() != '')
-			  socket.emit('chat message', yourname, $('#m').val());
-			$('#m').val('');
-		  }
-			  return false;
-        });
-		
-		socket.on('updateTimer', function(timerseconds, word){
-			document.getElementById("themeword").innerHTML = "Draw "+ word +"!";
-			if (timerseconds <= 60)
-				document.getElementById("timerShow").innerHTML = timerseconds;
-			else
-				document.getElementById("timerShow").innerHTML = "The round ended!";
-			if (timerseconds == 1)
-			{
-				var platno = document.getElementById('canvas');
-				
-				socket.emit('queuedrawing', platno.toDataURL(), yourname);
-				
-				theend.style.display = "flex";
-			}
-			if (timerseconds == 61)
-			{
-				$('#paintings').empty();
-				newCanvas();
-				
-				theend.style.display = "none";
-			}
-		});
-
-		socket.on('queuedrawing', function(imageurl, name){
-			console.log(name);
-			var image = new Image((canvas.width/2)-100, (canvas.height/2)-50);
-			image.id = "pic"
-			image.name = name;
-			if (yourname != name)
-				image.onclick = function () { socket.emit('winner',yourname, name); theend.style.display = "none"; };
-			else
-				image.onclick = function () {alert("Cannot vote for yourself!");};
-			image.src = imageurl;
-			document.getElementById('paintings').appendChild(image);
-		});
-		
-        socket.on('chat message', function(name, msg){
-		  if (name == null)
-		  {
-		    players++;
-			$('#messages').append($('<li>').text(msg));
-		  }
-		  else
-		  {
-			$('#messages').append($('<li>').text('' + name + ': ' + msg));
-
-		  }
-  		  var element = document.getElementById("messages");
-		  element.scrollTop = element.scrollHeight;
-        });
-	  
-    </script>
-	
+	<script type="text/javascript" src="js/clientsidelogic.js"></script>
   </body>
 </html>

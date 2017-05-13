@@ -172,7 +172,6 @@ function redraw()
 	if(curLoadResNum < totalLoadResources){ return; }
 	
 	redraw_count++;
-	console.log(redraw_count);
 	
 	var locX;
 	var locY;

@@ -16,7 +16,7 @@ const connectionString = process.env.DATABASE_URL || "postgres://postgres:root@l
 
 var time = 60;
 
-fs.readFile('./words.txt', "utf-8", function (err, data) {
+fs.readFile('etc/words.txt', "utf-8", function (err, data) {
   if (err) throw err;
 	words = data.split('\n');
 });
