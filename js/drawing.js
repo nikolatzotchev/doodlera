@@ -20,13 +20,7 @@ var canvasHeight = 500;
 var padding = 25;
 var lineWidth = 8;
 var outlineImage = new Image();
-var crayonImage = new Image();
-var markerImage = new Image();
-var eraserImage = new Image();
-var crayonBackgroundImage = new Image();
-var markerBackgroundImage = new Image();
-var eraserBackgroundImage = new Image();
-var crayonTextureImage = new Image();
+var whitecanvas = new Image();
 var undoHistory = [];
 var clickX = [];
 var clickY = [];
@@ -93,6 +87,8 @@ function prepareCanvas()
 	outlineImage.onload = function() { resourceLoaded(); 
 	};
 	outlineImage.src = "images/oF94e1N.png";
+	
+	whitecanvas.scr = "images/oF94e1N1.png";
 
 	// Add mouse events
 	// ----------------
@@ -119,28 +115,11 @@ function prepareCanvas()
 	$('#canvas').mouseup(function(e) {
 		paint = false;
 		undoHistory.push(canvas.toDataURL());
+		console.log(undoHistory.length);
 	  	redraw();
 	});
 	
-	var screen;
-	
-	function KeyPress(e) {
-	  screen = new Image(500, 1000);
-      var evtobj = window.event? event : e
-      if (evtobj.keyCode == 90 && evtobj.ctrlKey) {
-		newCanvas();
-		undoHistory.pop();
-		screen.scr = undoHistory[undoHistory.length - 1];
-		context.drawImage(screen, drawingAreaHeight, drawingAreaWidth);
-		context.save();
-		context.restore();
-	  }
-	}
-
-	document.onkeydown = KeyPress;
-	
 	$('#canvas').mouseleave(function(e){
-		undoHistory.push(canvas.toDataURL());
 		paint = false;
 	});
 }
@@ -185,7 +164,8 @@ function clearCanvas()
 
 function redraw()
 {
-
+	
+	context.drawImage(whitecanvas, drawingAreaX, drawingAreaY, drawingAreaWidth, drawingAreaHeight);
 	// Make sure required resources are loaded before redrawing
 	if(curLoadResNum < totalLoadResources){ return; }
 	
@@ -193,7 +173,7 @@ function redraw()
 	
 	var locX;
 	var locY;
-	
+
 	if (redraw_count > 200)
 	{
 		var image = new Image(500, 1000);
@@ -215,6 +195,7 @@ function redraw()
 		
 	var radius;
 	var i = 0;
+	
 	for(; i < clickX.length; i++)
 	{		
 		radius = clickSize[i];
@@ -243,8 +224,6 @@ function redraw()
 	context.globalAlpha = 1; // No IE support
 	
 	// Draw the outline image
+	
 	context.drawImage(outlineImage, drawingAreaX, drawingAreaY, drawingAreaWidth, drawingAreaHeight);
 }
-
-
-/**/

@@ -8,19 +8,15 @@
     <script type="text/javascript" src="js/drawing.js"></script> <!--drawing-->
 	<script type="text/javascript" src="js/palette.js"></script> <!--palette-->
     <link rel="stylesheet" type="text/css" href="css/doodlerstyle.css">
+	<link rel="stylesheet" type="text/css" href="css/rangeslider.css">
   </head>
   <body>
-	<img src="images/RnZGJo5.png" style="padding: 10px; float: left">
-	<input class="jscolor {valueElement:'chosen-value', onFineChange:'setTextColor(this)'}" style="margin-top: 15px; padding: 10px; float: top">
-		
-	</input>
-
-	<script>
-	function setTextColor(picker) {
-		curColor = '#' + picker.toString()
-	}
-	</script>
-	<input type="range" id="brushSize" min="2" max="30" value="5">
+  <nobr>
+	<img id="logo" src="images/RnZGJo5.png" style="padding: 10px; float: left">
+	<button class="jscolor {valueElement:'chosen-value', onFineChange:'setTextColor(this)'} myButton" style="margin-top: 15px; padding: 10px; float: top">Color</button>
+	<button class="myButton" onclick="newCanvas()">Clear</button>
+	<nobr><input type="range" id="brushSize" min="2" max="50" value="5"></input></nobr>
+  </nobr>
 	<h1 id="themeword" class="theme"></h1>
 	<h1 id="timerShow" class="timer">60</h1>
 	<div id="canvasDiv"></div>
@@ -32,8 +28,8 @@
 	</script>
   
 	<div id="myModal" class="modal">
-	  <form class="modal-content">
-		<input id="username" style="width: 75%; height: 50%" value=""/> <button id="myBtn" style="width: 21%; height: 50%">Log in</button>
+	  <form class="modal-content" style="width:450px; height: 100px">
+		<nobr><input class="textbox" id="username" style="width: 60%; height: 50%" value=""/> <button class="myButton" id="myBtn" style="font-size: medium">Log in</button></nobr>
 	  </form>
 	</div>
 	<div id="roundEnd" class="modal" style="display: none">
@@ -41,7 +37,7 @@
 	  </div>
 	</div>
     <ul id="messages" class="dropdown"></ul>
-    <form class="form" action="">
+    <form id="sendform" class="form" action="">
       <input id="m" autocomplete="off" /><button>Send</button>
     </form>
 	<script type="text/javascript" src="js/clientsidelogic.js"></script>

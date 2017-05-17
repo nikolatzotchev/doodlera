@@ -978,7 +978,7 @@ var jsc = {
 
 		// General options
 		//
-		this.value = null; // initial HEX color. To change it later, use methods fromString(), fromHSV() and fromRGB()
+		this.value = '#000000'; // initial HEX color. To change it later, use methods fromString(), fromHSV() and fromRGB()
 		this.valueElement = targetElement; // element that will be used to display and input the color code
 		this.styleElement = targetElement; // element that will preview the picked color using CSS backgroundColor
 		this.required = true; // whether the associated text <input> can be left empty
@@ -1009,10 +1009,10 @@ var jsc = {
 		this.crossSize = 8; // px
 		this.closable = false; // whether to display the Close button
 		this.closeText = 'Close';
-		this.buttonColor = '#000000'; // CSS color
+		this.buttonColor = '#86cfe6'; // CSS color
 		this.buttonHeight = 18; // px
 		this.padding = 12; // px
-		this.backgroundColor = '#FFFFFF'; // CSS color
+		this.backgroundColor = '#86cfe6'; // CSS color
 		this.borderWidth = 1; // px
 		this.borderColor = '#BBBBBB'; // CSS color
 		this.borderRadius = 8; // px

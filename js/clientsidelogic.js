@@ -5,6 +5,7 @@ var btn = document.getElementById("myBtn");
 var players = 0;
 var sock = io();
 var yourname;
+var screen = new Image(500, 1000);
 
 btn.onclick = function() {
 if ($('#username').val() != '')
@@ -32,6 +33,23 @@ $('form').submit(function(){
 	  return false;
 });
 
+function setTextColor(picker) {
+	curColor = '#' + picker.toString()
+}
+
+function KeyPress(e) {
+  var evtobj = window.event? event : e
+  if (evtobj.keyCode == 90 && evtobj.ctrlKey) {
+	var img = new Image();
+	undoHistory.pop();
+	newCanvas();
+	screen.scr = undoHistory[undoHistory.length - 1];
+	context.drawImage(img, drawingAreaX, drawingAreaY, drawingAreaWidth, drawingAreaHeight);
+  }
+}
+
+document.onkeydown = KeyPress;
+
 socket.on('updateTimer', function(timerseconds, word){
 	document.getElementById("themeword").innerHTML = "Draw "+ word +"!";
 	if (timerseconds <= 60)
@@ -50,6 +68,7 @@ socket.on('updateTimer', function(timerseconds, word){
 	{
 		$('#paintings').empty();
 		newCanvas();
+		undoHistory = [];
 		theend.style.display = "none";
 	}
 });
