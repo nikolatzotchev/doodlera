@@ -5,4 +5,4 @@ Multiplayer drawing game application
 
 Doodlera is [MIT licensed](LICENSE).
 
-Copyright (c) 2017 Victor Gyoshev
+Copyright (c) 2017 Victor Gyoshev + Teodor Dimitrov
