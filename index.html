@@ -14,7 +14,7 @@
   <nobr>
 	<img id="logo" src="images/RnZGJo5.png" style="padding: 10px; float: left">
 	<button class="jscolor {valueElement:'chosen-value', onFineChange:'setTextColor(this)'} myButton" style="margin-top: 15px; padding: 10px; float: top">Color</button>
-	<button class="myButton" onclick="newCanvas()">Clear</button>
+	<button class="myButton" onclick="newCanvas()" style="padding: 10px">Clear</button>
 	<nobr><input type="range" id="brushSize" min="2" max="50" value="5"></input></nobr>
   </nobr>
 	<h1 id="themeword" class="theme"></h1>
@@ -38,7 +38,7 @@
 	</div>
     <ul id="messages" class="dropdown"></ul>
     <form id="sendform" class="form" action="">
-      <input id="m" autocomplete="off" /><button>Send</button>
+      <input class="textbox" id="m" autocomplete="off" style="width:90%; height: 50px"/><button class= "myButton" style="width:9%">Send</button>
     </form>
 	<script type="text/javascript" src="js/clientsidelogic.js"></script>
   </body>

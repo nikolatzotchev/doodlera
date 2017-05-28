@@ -8,12 +8,12 @@ var yourname;
 var screen = new Image(500, 1000);
 
 btn.onclick = function() {
-if ($('#username').val() != '')
-{
-  modal.style.display = "none"
-  sock.emit('chosenname', $('#username').val())
-  yourname = $('#username').val();
-}
+	if ($('#username').val() != '')
+	{
+	    modal.style.display = "none"
+	    sock.emit('chosenname', $('#username').val())
+	    yourname = $('#username').val();
+	}
 }
 
 var socket = io();
@@ -43,7 +43,7 @@ function KeyPress(e) {
 	var img = new Image();
 	undoHistory.pop();
 	newCanvas();
-	screen.scr = undoHistory[undoHistory.length - 1];
+	img.scr = undoHistory[undoHistory.length - 1];
 	context.drawImage(img, drawingAreaX, drawingAreaY, drawingAreaWidth, drawingAreaHeight);
   }
 }

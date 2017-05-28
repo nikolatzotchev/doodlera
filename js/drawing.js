@@ -20,7 +20,6 @@ var canvasHeight = 500;
 var padding = 25;
 var lineWidth = 8;
 var outlineImage = new Image();
-var whitecanvas = new Image();
 var undoHistory = [];
 var clickX = [];
 var clickY = [];
@@ -84,11 +83,13 @@ function prepareCanvas()
 	// Load images
 	// -----------
 	
+	context.fillStyle="#FFFFFF";
+	context.fillRect(drawingAreaX, drawingAreaY, drawingAreaWidth-1, drawingAreaHeight-1);
+	
 	outlineImage.onload = function() { resourceLoaded(); 
 	};
-	outlineImage.src = "images/oF94e1N.png";
 	
-	whitecanvas.scr = "images/oF94e1N1.png";
+	outlineImage.src = "images/oF94e1N.png";
 
 	// Add mouse events
 	// ----------------
@@ -148,6 +149,9 @@ function newCanvas()
 	clickDrag = [];
 	clearCanvas();
 	redraw();
+	context.fillStyle="#FFFFFF";
+	context.fillRect(drawingAreaX, drawingAreaY, drawingAreaWidth-1, drawingAreaHeight-1);
+	context.drawImage(outlineImage, drawingAreaX, drawingAreaY, drawingAreaWidth, drawingAreaHeight);
 }
 
 /**
@@ -164,11 +168,9 @@ function clearCanvas()
 
 function redraw()
 {
-	
-	context.drawImage(whitecanvas, drawingAreaX, drawingAreaY, drawingAreaWidth, drawingAreaHeight);
 	// Make sure required resources are loaded before redrawing
 	if(curLoadResNum < totalLoadResources){ return; }
-	
+
 	redraw_count++;
 	
 	var locX;
@@ -185,7 +187,7 @@ function redraw()
 		clickSize = clickSize.slice(-100);
 		clickDrag = clickDrag.slice(-100);
 		redraw_count = 0;
-	}		
+	}
 	
 	// Keep the drawing in the drawing area
 	context.save();
@@ -195,7 +197,7 @@ function redraw()
 		
 	var radius;
 	var i = 0;
-	
+		
 	for(; i < clickX.length; i++)
 	{		
 		radius = clickSize[i];
